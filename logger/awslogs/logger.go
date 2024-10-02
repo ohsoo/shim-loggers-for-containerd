@@ -86,13 +86,13 @@ func InitLogger(globalArgs *logger.GlobalArgs, awslogsArgs *Args) *LoggerArgs {
 func (la *LoggerArgs) RunLogDriver(ctx context.Context, config *logging.Config, ready func() error) error {
 	defer debug.DeferFuncForRunLogDriver()
 
-	loggerConfig := getAWSLogsConfig(la.args)
+	loggerConfig := getAWSLogsConfig(la.args, la.globalArgs.Mode)
 	info := logger.NewInfo(
 		la.globalArgs.ContainerID,
 		la.globalArgs.ContainerName,
 		logger.WithConfig(loggerConfig),
 	)
-	fmt.Println(info.Config["mode"])
+	fmt.Println("Mode: ", info.Config["mode"])
 	stream, err := dockerawslogs.New(*info)
 	if err != nil {
 		debug.ErrLogger = fmt.Errorf("unable to create stream: %w", err)
@@ -135,7 +135,7 @@ func (la *LoggerArgs) RunLogDriver(ctx context.Context, config *logging.Config, 
 }
 
 // getAWSLogsConfig sets values for awslogs config.
-func getAWSLogsConfig(args *Args) map[string]string {
+func getAWSLogsConfig(args *Args, mode string) map[string]string {
 	config := make(map[string]string)
 	// Required arguments
 	config[GroupKey] = args.Group
@@ -163,7 +163,6 @@ func getAWSLogsConfig(args *Args) map[string]string {
 	if endpoint != "" {
 		config[EndpointKey] = endpoint
 	}
-	mode := args.Mode
 	if mode != "" {
 		config[ModeKey] = mode
 	}
