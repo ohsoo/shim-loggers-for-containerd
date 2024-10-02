@@ -92,6 +92,7 @@ func (la *LoggerArgs) RunLogDriver(ctx context.Context, config *logging.Config, 
 		la.globalArgs.ContainerName,
 		logger.WithConfig(loggerConfig),
 	)
+	fmt.Println(info.Config["mode"])
 	stream, err := dockerawslogs.New(*info)
 	if err != nil {
 		debug.ErrLogger = fmt.Errorf("unable to create stream: %w", err)
