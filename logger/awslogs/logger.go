@@ -37,6 +37,8 @@ const (
 	CredentialsEndpointKey = "awslogs-credentials-endpoint" //nolint:gosec // not credentials
 	// EndpointKey is the AWS logging endpoint.
 	EndpointKey = "awslogs-endpoint"
+	// ModeKey indicates blocking or non-blocking logging mode.
+	ModeKey = "mode"
 
 	// There are 26 bytes additional bytes for each log event:
 	// See more details in: http://docs.aws.amazon.com/AmazonCloudWatchLogs/latest/APIReference/API_PutLogEvents.html
@@ -63,6 +65,7 @@ type Args struct {
 	MultilinePattern string
 	DatetimeFormat   string
 	Endpoint         string
+	Mode             string
 }
 
 // LoggerArgs stores global logger args and awslogs specific args.
@@ -158,6 +161,10 @@ func getAWSLogsConfig(args *Args) map[string]string {
 	endpoint := args.Endpoint
 	if endpoint != "" {
 		config[EndpointKey] = endpoint
+	}
+	mode := args.Mode
+	if mode != "" {
+		config[ModeKey] = mode
 	}
 
 	return config
